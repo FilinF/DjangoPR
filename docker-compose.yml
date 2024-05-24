@@ -1,0 +1,33 @@
+version: '3'
+networks:
+  app-network:
+
+services:
+  back:
+    build:
+      context: ./my_project
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+    restart: always
+
+
+  proxy:
+    image: nginx
+    ports:
+      - 8003:8000
+    volumes:
+      - ./my_project/nginx.conf:/etc/nginx/conf.d/django.conf
+    networks:
+      - app-network
+    restart: always
+    depends_on:
+      - back
+
+  telegram:
+    build:
+      context: ./tg-bot
+      dockerfile: Dockerfile
+    networks:
+      - app-network
+    restart: always
